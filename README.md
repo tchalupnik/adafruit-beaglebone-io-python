@@ -4,6 +4,8 @@
 [![PyPI version](https://badge.fury.io/py/Adafruit_BBIO.svg)](https://badge.fury.io/py/Adafruit_BBIO)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/Adafruit_BBIO.svg)](https://pypi.python.org/pypi/Adafruit_BBIO/)
 
+> **🚀 Modernized Development Workflow**: This project now uses [UV](https://docs.astral.sh/uv/) for fast Python package management and GitHub Actions for CI. **Requires Python 3.10+**.
+
 Adafruit BBIO is an API to enable [GPIO](README.md#gpio-setup), [PWM](README.md#pwm), [ADC](README.md#adc), [UART](README.md#uart), [SPI](README.md#spi) and [eQEP](README.md#eqep) (Quadrature Encoder) hardware access from Python applications running on the Beaglebone. 
 
 * It is recommended to use an [official BeagleBoard.org Debian image](https://beagleboard.org/latest-images)
@@ -13,7 +15,7 @@ Adafruit BBIO is an API to enable [GPIO](README.md#gpio-setup), [PWM](README.md#
 
 * New versions of Adafruit_BBIO may break backwards compatibility. Please read the [changelog](CHANGELOG.md).
 
-* It is recommended to use Python 3
+* **Python 3.10+ required** for modern development workflow
 
 ## Installation on Debian
 
@@ -276,14 +278,290 @@ NOTE: `sudo` should not be required as udev configures group ownership and permi
 
 ## Reporting issues
 
-When reporting issues, plesae run the following script which will print the system configuration:
+When reporting issues, please run the following script which will print the system configuration:
 ```
 sudo /opt/scripts/tools/version.sh
 ```
 and paste the output in a reply.
 
-This script should be present for any Debian or Ubunut image downloaded from:
+This script should be present for any Debian or Ubuntu image downloaded from:
 https://beagleboard.org/ or https://rcn-ee.com/
+
+---
+
+# Development Guide
+
+This section explains how to develop and contribute to the Adafruit_BBIO library using modern Python tooling.
+
+## Development Prerequisites
+
+- Python 3.10 or higher
+- [UV](https://docs.astral.sh/uv/) - Fast Python package installer and resolver
+- Make (for C++ components only)
+- For C++ components: `automake`, `autoconf`, `libtool`, `libgtest-dev`
+
+## Development Quick Start
+
+```bash
+# Install UV if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Set up Python development environment
+uv sync --extra dev
+
+# Run tests to make sure everything works
+uv run pytest
+
+# Make your changes, then run quality checks
+uv run ruff check --fix .
+uv run ruff format .
+uv run mypy Adafruit_BBIO/
+
+# Build C++ components (if needed)
+make cpp
+```
+
+## Development Setup
+
+### 1. Install UV
+
+```bash
+# Install UV
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Or with pip
+pip install uv
+```
+
+### 2. Set up Python Development Environment
+
+```bash
+# Sync dependencies (creates virtual environment automatically)
+uv sync --extra dev
+```
+
+## Development Workflow
+
+### Python Development (Use UV directly)
+
+#### Environment Management
+```bash
+# Set up development environment
+uv sync --extra dev
+
+# Add a new dependency
+uv add package-name
+
+# Add a development dependency
+uv add --dev package-name
+```
+
+#### Testing
+```bash
+# Run all tests
+uv run pytest
+
+# Run with coverage
+uv run pytest --cov=Adafruit_BBIO
+
+# Run specific test file
+uv run pytest test/test_gpio.py
+```
+
+#### Code Quality
+```bash
+# Check code style
+uv run ruff check .
+
+# Auto-fix linting issues
+uv run ruff check --fix .
+
+# Format code
+uv run ruff format .
+
+# Check if code is formatted
+uv run ruff format --check .
+
+# Type checking
+uv run mypy Adafruit_BBIO/ --ignore-missing-imports
+```
+
+#### Building and Publishing
+```bash
+# Build distribution packages
+uv build
+
+# Check the built packages
+uv run twine check dist/*
+
+# Upload to PyPI (requires credentials)
+uv run twine upload dist/*
+
+# Upload to Test PyPI
+uv run twine upload --repository testpypi dist/*
+```
+
+### C++ Development (Use Make)
+
+```bash
+# Build C++ components
+make cpp
+
+# Run C++ tests
+make cpp-test
+
+# Install C++ components (requires sudo)
+make cpp-install
+
+# Clean C++ build artifacts
+make cpp-clean
+
+# Clean everything
+make clean
+```
+
+### Utility Commands
+
+```bash
+# Sync system time (useful for development)
+make time
+```
+
+## Development Tools Configuration
+
+### Ruff (Linting + Formatting + Import Sorting)
+- Replaces: flake8, black, isort
+- Line length: 88 characters
+- Target Python version: 3.10+
+- Configuration in `pyproject.toml`
+
+### MyPy (Type Checking)
+- Target Python version: 3.10
+- Ignores missing imports
+- Configuration in `pyproject.toml`
+
+### Pytest (Testing)
+- Test discovery: `test_*.py` files
+- Configuration in `pyproject.toml`
+
+## Command Reference
+
+### Python Development (UV)
+| Command | Description |
+|---------|-------------|
+| `uv sync --extra dev` | Set up development environment |
+| `uv run pytest` | Run all tests |
+| `uv run ruff check .` | Check code style |
+| `uv run ruff check --fix .` | Fix code style issues |
+| `uv run ruff format .` | Format code |
+| `uv run ruff format --check .` | Check if code is formatted |
+| `uv run mypy Adafruit_BBIO/` | Run type checking |
+| `uv build` | Build distribution packages |
+| `uv run twine upload dist/*` | Publish to PyPI |
+
+### C++ Development (Make)
+| Command | Description |
+|---------|-------------|
+| `make cpp` | Build C++ components |
+| `make cpp-test` | Run C++ tests |
+| `make cpp-install` | Install C++ components |
+| `make cpp-clean` | Clean C++ build artifacts |
+| `make clean` | Clean all build artifacts |
+
+### Utility (Make)
+| Command | Description |
+|---------|-------------|
+| `make time` | Sync system time |
+
+## Continuous Integration
+
+The project uses **GitHub Actions** for modern CI/CD:
+
+### Workflows
+
+1. **CI Workflow** (`.github/workflows/ci.yml`)
+   - Runs on every push and pull request
+   - Tests on Python 3.10, 3.11, 3.12, 3.13
+   - Uses UV for fast dependency management
+   - Runs linting, formatting, type checking, and tests
+   - Uploads coverage to Codecov
+
+2. **Release Workflow** (`.github/workflows/release.yml`)
+   - Automatically publishes to PyPI on GitHub releases
+   - Builds and validates packages before publishing
+
+### Local CI Simulation
+
+To run the same checks locally:
+
+```bash
+# Install UV
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Set up environment and run all checks
+uv sync --extra dev
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy Adafruit_BBIO/ --ignore-missing-imports
+uv run pytest --cov=Adafruit_BBIO
+
+# Build packages
+uv build
+
+# Check packages
+uv run twine check dist/*
+```
+
+## BeagleBone Setup (for C++ components)
+
+```bash
+# Enable cape manager and PWM pins
+sudo sh -c 'echo cape-universaln > /sys/devices/platform/bone_capemgr/slots'
+sudo sh -c 'echo pwm > /sys/devices/platform/ocp/ocp\:P9_16_pinmux/state'
+sudo sh -c 'echo pwm > /sys/devices/platform/ocp/ocp\:P8_19_pinmux/state'
+
+# Install C++ prerequisites
+sudo apt-get install automake autoconf libtool libgtest-dev
+
+# Build and install C++ components
+make cpp
+make cpp-install
+```
+
+## Development Philosophy
+
+This project follows a **clean separation of concerns**:
+
+- **UV**: Handles all Python-related tasks (dependencies, testing, building, publishing)
+- **Make**: Handles only C++ build system and system utilities
+- **GitHub Actions**: Modern CI/CD replacing old tools
+- **No overlap**: Each tool does what it's best at
+
+This approach ensures:
+- ✅ Fast Python development with UV
+- ✅ Standard C++ build process with autotools
+- ✅ Modern CI/CD with GitHub Actions
+- ✅ No confusion about which tool to use for what
+- ✅ Easy maintenance and clear documentation
+
+## Migration from Legacy Tools
+
+We've modernized by removing old tools and replacing them with better alternatives:
+
+### Removed Legacy Tools ❌
+- **Travis CI** (`.travis.yml`) → GitHub Actions
+- **Tox** (`tox.ini`) → UV's built-in multi-Python support
+- **setup.cfg** → Everything in `pyproject.toml`
+- **Black + Flake8 + isort** → Ruff (single tool)
+- **pip + virtualenv** → UV (faster, more reliable)
+
+### Modern Replacements ✅
+- **GitHub Actions**: Better integration, free for open source
+- **UV**: 10-100x faster than pip, built-in virtual environments
+- **Ruff**: 10-100x faster than Flake8, replaces multiple tools
+- **pyproject.toml**: Single configuration file for everything
+
+---
 
 
 ## Credits
