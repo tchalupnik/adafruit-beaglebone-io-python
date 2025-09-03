@@ -13,22 +13,22 @@ def teardown_module(module):
 
 
 def get_pwm_dir():
-    if kernel >= '4.1.0':
+    if kernel >= "4.1.0":
         # On 4.1+, the pwm subdirectory sometimes takes different names:
         # .pwm or .ehrpwm, etc.
         results = glob.glob(
-            "/sys/devices/platform/ocp/48302000.*/" +
-            "48302200.*/pwm/pwmchip?/pwm*")
+            "/sys/devices/platform/ocp/48302000.*/" + "48302200.*/pwm/pwmchip?/pwm*"
+        )
         # We expect that there will be a result (a directory fitting
         # our path exists) so test that with an assertion.
         assert len(results) > 0
         # Continue with the pwm_dir found
         return results[0]
     else:
-        files = os.listdir('/sys/devices')
-        ocp = '/sys/devices/' + [s for s in files if s.startswith('ocp')][0]
+        files = os.listdir("/sys/devices")
+        ocp = "/sys/devices/" + [s for s in files if s.startswith("ocp")][0]
         files = os.listdir(ocp)
-        return ocp + '/' + [s for s in files if s.startswith('pwm_test_P9_14')][0]
+        return ocp + "/" + [s for s in files if s.startswith("pwm_test_P9_14")][0]
 
 
 class TestPwmSetup:
@@ -39,46 +39,46 @@ class TestPwmSetup:
         pwm_dir = get_pwm_dir()
 
         assert os.path.exists(pwm_dir)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
         assert int(duty) == 0
         assert int(period) == 500000
         PWM.cleanup()
 
     def test_start_pwm_ecap0(self):
-        print("test_start_pwm_ecap0\n");
+        print("test_start_pwm_ecap0\n")
         PWM.cleanup()
         PWM.start("P9_42", 0)
         pwm_dir = get_pwm_dir()
         assert os.path.exists(pwm_dir)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
         assert int(duty) == 0
         assert int(period) == 500000
         PWM.cleanup()
 
     # test not enabled as default as
     # cape-universala overlay required
-    #def test_start_pwm_ecap2(self):
-        #print("test_start_pwm_ecap2\n");
-        #PWM.cleanup()
-        #PWM.start("P9_28", 0)
-        #pwm_dir = get_pwm_dir()
-        #assert os.path.exists(pwm_dir)
-        #if kernel >= '4.1.0':
-            #duty = open(pwm_dir + '/duty_cycle').read()
-        #else:
-            #duty = open(pwm_dir + '/duty').read()
-        #period = open(pwm_dir + '/period').read()
-        #assert int(duty) == 0
-        #assert int(period) == 500000
-        #PWM.cleanup()
+    # def test_start_pwm_ecap2(self):
+    # print("test_start_pwm_ecap2\n");
+    # PWM.cleanup()
+    # PWM.start("P9_28", 0)
+    # pwm_dir = get_pwm_dir()
+    # assert os.path.exists(pwm_dir)
+    # if kernel >= '4.1.0':
+    # duty = open(pwm_dir + '/duty_cycle').read()
+    # else:
+    # duty = open(pwm_dir + '/duty').read()
+    # period = open(pwm_dir + '/period').read()
+    # assert int(duty) == 0
+    # assert int(period) == 500000
+    # PWM.cleanup()
 
     def test_start_pwm_with_polarity_one(self):
         PWM.cleanup()
@@ -87,12 +87,12 @@ class TestPwmSetup:
         pwm_dir = get_pwm_dir()
 
         assert os.path.exists(pwm_dir)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
-        polarity = open(pwm_dir + '/polarity').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
+        polarity = open(pwm_dir + "/polarity").read()
         assert int(duty) == 0
         assert int(period) == 500000
 
@@ -103,9 +103,9 @@ class TestPwmSetup:
         # and commit c35e4cb from pull request #173:
         # "source/c_pwm.c: disable pwm_set_polarity (broken in v4.9.x/v4.14.x)"
         # https://github.com/adafruit/adafruit-beaglebone-io-python/pull/173/commits/c35e4cb98a1f14c85aca7259132bcc97e93d78f8
-        #if kernel >= '4.1.0':
+        # if kernel >= '4.1.0':
         #   assert polarity == "inversed\n"
-        #else:
+        # else:
         #   assert int(polarity) == 1
         PWM.cleanup()
 
@@ -116,12 +116,12 @@ class TestPwmSetup:
         pwm_dir = get_pwm_dir()
 
         assert os.path.exists(pwm_dir)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
-        polarity = open(pwm_dir + '/polarity').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
+        polarity = open(pwm_dir + "/polarity").read()
         assert int(duty) == 0
         assert int(period) == 500000
 
@@ -132,9 +132,9 @@ class TestPwmSetup:
         # and commit c35e4cb from pull request #173:
         # "source/c_pwm.c: disable pwm_set_polarity (broken in v4.9.x/v4.14.x)"
         # https://github.com/adafruit/adafruit-beaglebone-io-python/pull/173/commits/c35e4cb98a1f14c85aca7259132bcc97e93d78f8
-        #if kernel >= '4.1.0':
+        # if kernel >= '4.1.0':
         #    assert polarity == 'normal\n'
-        #else:
+        # else:
         #    assert int(polarity) == 0
         PWM.cleanup()
 
@@ -145,17 +145,17 @@ class TestPwmSetup:
         pwm_dir = get_pwm_dir()
 
         assert os.path.exists(pwm_dir)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
-        polarity = open(pwm_dir + '/polarity').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
+        polarity = open(pwm_dir + "/polarity").read()
         assert int(duty) == 0
         assert int(period) == 500000
 
-        if kernel >= '4.1.0':
-            assert polarity == 'normal\n'
+        if kernel >= "4.1.0":
+            assert polarity == "normal\n"
         else:
             assert int(polarity) == 0
         PWM.cleanup()
@@ -224,20 +224,20 @@ class TestPwmSetup:
         pwm_dir = get_pwm_dir()
 
         assert os.path.exists(pwm_dir)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
         assert int(duty) == 0
         assert int(period) == 500000
 
         PWM.set_duty_cycle("P9_14", 100)
-        if kernel >= '4.1.0':
-            duty = open(pwm_dir + '/duty_cycle').read()
+        if kernel >= "4.1.0":
+            duty = open(pwm_dir + "/duty_cycle").read()
         else:
-            duty = open(pwm_dir + '/duty').read()
-        period = open(pwm_dir + '/period').read()
+            duty = open(pwm_dir + "/duty").read()
+        period = open(pwm_dir + "/period").read()
         assert int(duty) == 500000
         assert int(period) == 500000
         PWM.cleanup()

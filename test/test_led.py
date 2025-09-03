@@ -4,8 +4,10 @@ import errno
 
 import Adafruit_BBIO.GPIO as GPIO
 
+
 def teardown_module(module):
     GPIO.cleanup()
+
 
 class TestLED:
     def set_brightness(self, state, led, name):
@@ -30,18 +32,18 @@ class TestLED:
                 return ""
 
     def set_all_leds(self, state):
-        test_leds = { "USR0": "heartbeat", \
-                      "USR1": "mmc0", \
-                      "USR2": "cpu0", \
-                      "USR3": "mmc1" }
+        test_leds = {
+            "USR0": "heartbeat",
+            "USR1": "mmc0",
+            "USR2": "cpu0",
+            "USR3": "mmc1",
+        }
         for led, name in test_leds.items():
             self.set_brightness(state, led, name)
             GPIO.cleanup()
-   
+
     def test_brightness_high(self):
         self.set_all_leds(GPIO.HIGH)
 
     def test_brightness_low(self):
         self.set_all_leds(GPIO.LOW)
-
-
