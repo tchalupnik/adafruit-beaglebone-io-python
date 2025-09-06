@@ -26,7 +26,6 @@ classifiers = [
     "Topic :: Home Automation",
     "Topic :: System :: Hardware",
 ]
-requires-python = ">=3.10"
 
 [project.urls]
 Homepage = "https://github.com/adafruit/adafruit-beaglebone-io-python/"
