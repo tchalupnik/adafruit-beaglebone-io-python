@@ -24,6 +24,8 @@ classifiers = [
   "Topic :: Home Automation",
   "Topic :: System :: Hardware",
 ]
+requires-python = ">=3.10"
+
 
 [project.urls]
 Homepage = "https://github.com/adafruit/adafruit-beaglebone-io-python/"
@@ -60,18 +62,6 @@ dev-dependencies = [
 # Ruff configuration (replaces black + flake8 + isort)
 [tool.ruff]
 line-length = 88
-target-version = "py310"
-
-[tool.ruff.lint]
-select = [
-  "E",  # pycodestyle errors
-  "W",  # pycodestyle warnings
-  "F",  # pyflakes
-  "I",  # isort
-  "B",  # flake8-bugbear
-  "C4", # flake8-comprehensions
-  "UP", # pyupgrade
-]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -92,12 +82,3 @@ testpaths = ["test"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-
-# Coverage configuration
-[tool.coverage.run]
-source = ["Adafruit_BBIO"]
-omit = ["*/tests/*", "*/test_*"]
-
-[tool.coverage.report]
-"raise NotImplementedError",
-exclude_lines = ["pragma: no cover", "def __repr__", "raise AssertionError"]
